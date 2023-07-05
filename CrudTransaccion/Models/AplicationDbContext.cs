@@ -4,15 +4,21 @@ namespace CrudTransaccion.Models
 {
     public class AplicationDbContext : DbContext
     {
-        public DbSet<Persona> Personas { get; set; }
-        public DbSet<Cargo> Roles { get; set; }
-        public DbSet<Empresa> Empresas { get; set; }
+        public DbSet<Autor> Autores { get; set; }
+        public DbSet<Genero> Generos { get; set; }
+        public DbSet<Libro> Libros { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=Transaccional;Trusted_Connection=true;Encrypt=false;");
+            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=Transaccional;Trusted_Connection=true;Encrypt = False;");
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Libro>().HasKey(v => v.Libroid);
+
         }
 
     }
-}
 }
