@@ -1,4 +1,5 @@
 using CrudTransaccion.Models;
+using CrudTransaccion.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections.Generic;
@@ -8,41 +9,57 @@ class Program
 {
     static void Main(string[] args)
     {
-        guardarEstudianteYdireccionTransaction();
+        addTemaSolistaTransaction();
     }
 
-
-    public static void guardarEstudianteYdireccionTransaction()
+    public static void addTemaSolistaTransaction()
     {
-        Console.WriteLine("Metodo agregar Persona, cargo y empresa con transaccion");
-
+        Console.WriteLine("Metodo agregar lIBRO,  autor,  genero");
         AplicationDbContext context = new AplicationDbContext();
-        Persona person = new Persona();
-        Cargo cargo = new Cargo();
-        Empresa empresa = new Empresa();
-        var dbContextTransaction = context.Database.BeginTransaction();
-
-        cargo.CargoId = 1;
-        cargo.CargoName = "Gerente";
-        empresa.EmpresaId = 1;
-        empresa.Name = "Empresa1";
+        Libro libro = new Libro();
+        Autor autor = new Autor();
+        Genero genero = new Genero();
+        var transaction = context.Database.BeginTransaction();
 
         try
         {
-            person.Name = "Karina";
-            person.Cargo = cargo;
-            person.Empresa = empresa;
-            context.Personas.Add(person);
+            //Agregar Autor
+            autor.Name = "Anne Barry";
+            autor.edad = 36;
             context.SaveChanges();
-            dbContextTransaction.Commit();
-            Console.WriteLine("Datos guardados con exito");
+
+            //Agregar Genero
+            genero.Categoria = "Accion";
+            context.SaveChanges();
+
+            //Agregar Libro
+            libro.Titulo = "The black haw";
+            libro.Paginas = 240;
+            libro.genero = genero;
+            libro.autor = autor;
+
+            context.Libros.Add(libro);
+            context.SaveChanges();
+
+            if (string.IsNullOrEmpty(autor.Name) || genero.Categoria == null || libro.Titulo == null)
+            {
+                Console.WriteLine("Ha ingresado uno o más campos vacíos. Rollback ejecutado.");
+                transaction.Rollback();
+            }
+            else
+            {
+                transaction.Commit();
+                Console.WriteLine("Datos agregados exitosamente");
+            }
+
         }
         catch (Exception e)
         {
-            dbContextTransaction.Rollback();
+            transaction.Rollback();
             Console.WriteLine("Error " + e.ToString());
         }
-
-
     }
+}
+
+
 }
